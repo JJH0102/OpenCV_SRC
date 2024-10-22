@@ -28,7 +28,11 @@ setup(
         "hello_sub = simple_ros.hello_sub:main",
         "hello_pub = simple_ros.hello_pub:main",
         "time_pub = simple_ros.time_pub:main",
-        "move_turtle = simple_ros.move_turtle:main"
+        "move_turtle = simple_ros.move_turtle:main",
+        "move_turtle_time = simple_ros.move_turtle_time:main",
+        "service_server = simple_ros.service_server:main",
+        "service_client = simple_ros.service_client:main",
+        "user_int_pub = simple_ros.user_int_pub:main"
         ],
     },
 )

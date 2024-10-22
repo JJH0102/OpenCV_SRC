@@ -1,5 +1,6 @@
 import rclpy
 from geometry_msgs.msg import Twist
+from rclpy.duration import Duration
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -26,6 +27,7 @@ class Move_turtle(Node):
         self.pose = Pose()
         self.color = Color()
         self.phase = 0
+        self.prevTime = self.get_clock().now()
 
     def twist_pub(self):
         self.pub.publish(self.twist)
@@ -35,47 +37,23 @@ class Move_turtle(Node):
 
     def color_callback(self, msg: Color):
         self.color = msg
-    
+
     def update(self):
-        """ self.twist, self.pose, self.color 을 이용한 알고리즘 """
-        # self.twist.linear.x += 0.001
-        # self.twist.angular.z = 1.0
+        """ self.twist, self.pose, self.color 을 이용한 알고리즘"""
         if self.phase == 0:
-            if self.pose.theta < 0:
-                self.twist.linear.x = 0.0
-                self.twist.angular.z = 1.0
-            elif self.pose.x < 8:
-                self.twist.linear.x = 0.6
-                self.twist.angular.z = 0.0
-            else:
+            self.twist.linear.x = 0.0
+            self.twist.angular.z = 2.0
+            
+            if (self.get_clock().now() - self.prevTime) > Duration(seconds = 1, nanoseconds = 250_000_000):
+                self.prevTime = self.get_clock().now()
                 self.phase = 1
+        
         elif self.phase == 1:
-            if self.pose.theta < 3.141592 / 2:
-                self.twist.linear.x = 0.0
-                self.twist.angular.z = 1.0
-            elif self.pose.y < 8:
-                self.twist.linear.x = 0.6
-                self.twist.angular.z = 0.0
-            else:
-                self.phase = 2
-        elif self.phase == 2:
-            if self.pose.theta < 3.0:
-                self.twist.linear.x = 0.0
-                self.twist.angular.z = 1.0
-            elif self.pose.x > 2:
-                self.twist.linear.x = 0.6
-                self.twist.angular.z = 0.0
-            else:
-                self.phase = 3
-                self.get_logger().info("phase 3")
-        elif self.phase == 3:
-            if  not -3.341592/2 < self.pose.theta < -3.141592/2:
-                self.twist.linear.x = 0.0
-                self.twist.angular.z = 1.0
-            elif self.pose.y > 2:
-                self.twist.linear.x = 0.6
-                self.twist.angular.z = 0.0
-            else:
+            self.twist.linear.x = 1.0
+            self.twist.angular.z = 0.0
+            
+            if (self.get_clock().now() - self.prevTime) > Duration(seconds = 2):
+                self.prevTime = self.get_clock().now()
                 self.phase = 0
 
 def main():
